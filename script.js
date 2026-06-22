@@ -240,6 +240,82 @@ document.addEventListener('keydown', e => {
   }, { passive: true });
 })();
 
+/* ── FEEDBACK ── */
+let selectedRating = 0;
+
+function initStarRating() {
+  const stars = document.querySelectorAll('#starRating .star');
+  stars.forEach(star => {
+    star.addEventListener('mouseover', () => highlightStars(parseInt(star.dataset.val)));
+    star.addEventListener('mouseout',  () => highlightStars(selectedRating));
+    star.addEventListener('click', () => {
+      selectedRating = parseInt(star.dataset.val);
+      highlightStars(selectedRating);
+    });
+  });
+}
+
+function highlightStars(n) {
+  document.querySelectorAll('#starRating .star').forEach((s, i) => {
+    s.classList.toggle('active', i < n);
+  });
+}
+
+function renderFeedback(list) {
+  const grid = document.getElementById('feedbackGrid');
+  if (!grid) return;
+  if (list.length === 0) {
+    grid.innerHTML = '<div class="fb-empty">Niciun feedback încă. Fii primul care lasă o părere! ✨</div>';
+    return;
+  }
+  grid.innerHTML = list.map(f => {
+    const rating  = Math.min(5, Math.max(0, parseInt(f.rating) || 5));
+    const filled  = '<span class="star-filled">' + '★'.repeat(rating) + '</span>';
+    const empty   = rating < 5 ? '<span class="star-empty">' + '☆'.repeat(5 - rating) + '</span>' : '';
+    return `
+      <div class="feedback-card">
+        <span class="fb-quote">❝</span>
+        <p class="fb-message">${escHtml(f.message)}</p>
+        <div class="fb-stars">${filled}${empty}</div>
+        <div class="fb-author">— ${escHtml(f.name)}</div>
+      </div>`;
+  }).join('');
+}
+
+async function submitFeedback() {
+  const name    = document.getElementById('fbName').value.trim();
+  const message = document.getElementById('fbMessage').value.trim();
+  if (!name)              { alert('Te rog introdu numele tău.');          return; }
+  if (!message)           { alert('Te rog lasă un mesaj.');               return; }
+  if (selectedRating === 0) { alert('Te rog selectează o notă (stele).'); return; }
+
+  const btn = document.querySelector('.btn-fb-submit');
+  btn.disabled = true; btn.textContent = 'Se trimite...';
+
+  try {
+    await db.collection('feedback').add({
+      name, message, rating: selectedRating,
+      createdAt: new Date().toISOString(),
+    });
+    document.getElementById('fbName').value    = '';
+    document.getElementById('fbMessage').value = '';
+    selectedRating = 0;
+    highlightStars(0);
+    const ok = document.getElementById('fbSuccess');
+    ok.style.display = 'block';
+    setTimeout(() => { ok.style.display = 'none'; }, 5000);
+  } catch (e) {
+    alert('Eroare la trimitere. Încearcă din nou.');
+    console.error('submitFeedback:', e);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Trimite Feedback';
+  }
+}
+
+db.collection('feedback').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
+  renderFeedback(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
+}, err => console.error('Feedback listener:', err));
+
 /* ── INIT ── */
 db.collection('products').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
   allProducts = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -247,3 +323,4 @@ db.collection('products').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
 }, err => console.error('Products listener:', err));
 
 loadConfig();
+initStarRating();

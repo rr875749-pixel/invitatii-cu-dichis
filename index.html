@@ -14,6 +14,7 @@
       <nav>
         <a href="#" class="active">Acasă</a>
         <a href="#produse">Produse</a>
+        <a href="#feedback">Feedback</a>
         <a href="#contact">Contact</a>
       </nav>
     </div>
@@ -36,6 +37,32 @@
       <div class="filter-tabs" id="filterTabs"></div>
 
       <div class="products-grid" id="productsGrid"></div>
+    </div>
+  </section>
+
+  <!-- FEEDBACK -->
+  <section class="feedback-section" id="feedback">
+    <div class="container">
+      <h2 class="section-title">Ce Spun Clienții</h2>
+      <p class="section-sub">Părerile celor care au ales Invitații cu Dichis</p>
+      <div class="gold-divider" style="margin-bottom:40px;"></div>
+
+      <div class="feedback-grid" id="feedbackGrid"></div>
+
+      <div class="feedback-form-wrap">
+        <h3 class="feedback-form-title">Lasă un Feedback</h3>
+        <input type="text" id="fbName" class="fb-input" placeholder="Numele tău *" maxlength="60" />
+        <div class="star-rating" id="starRating">
+          <span class="star" data-val="1">★</span>
+          <span class="star" data-val="2">★</span>
+          <span class="star" data-val="3">★</span>
+          <span class="star" data-val="4">★</span>
+          <span class="star" data-val="5">★</span>
+        </div>
+        <textarea id="fbMessage" class="fb-textarea" placeholder="Mesajul tău *" maxlength="400" rows="3"></textarea>
+        <button class="btn-fb-submit" onclick="submitFeedback()">Trimite Feedback</button>
+        <p class="fb-success" id="fbSuccess" style="display:none;">Mulțumim pentru feedback! ✨</p>
+      </div>
     </div>
   </section>
 

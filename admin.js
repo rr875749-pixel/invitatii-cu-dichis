@@ -62,6 +62,7 @@ async function showAdmin(username) {
     renderAdminList(),
     loadContactForm(),
     renderPaperTypeList(),
+    renderAdminFeedbackList(),
   ]);
 }
 
@@ -337,7 +338,7 @@ function compressImage(file) {
     reader.onload = e => {
       const img = new Image();
       img.onload = () => {
-        const MAX = 800;
+        const MAX = 1500;
         let w = img.width, h = img.height;
         if (w > MAX || h > MAX) {
           if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
@@ -346,7 +347,7 @@ function compressImage(file) {
         const canvas = document.createElement('canvas');
         canvas.width = w; canvas.height = h;
         canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-        resolve(canvas.toDataURL('image/jpeg', 0.75));
+        resolve(canvas.toDataURL('image/jpeg', 0.92));
       };
       img.src = e.target.result;
     };
@@ -472,6 +473,50 @@ async function renderAdminList() {
   } catch (e) {
     el.innerHTML = '<div class="admin-empty">Eroare la încărcarea produselor. Verifică Firebase.</div>';
     console.error('renderAdminList:', e);
+  }
+}
+
+/* ── FEEDBACK ── */
+async function renderAdminFeedbackList() {
+  const el = document.getElementById('adminFeedbackList');
+  if (!el) return;
+  try {
+    const snap = await db.collection('feedback').orderBy('createdAt', 'desc').get();
+    if (snap.empty) {
+      el.innerHTML = '<div class="admin-empty">Niciun feedback primit încă.</div>';
+      return;
+    }
+    el.innerHTML = snap.docs.map(doc => {
+      const f      = doc.data();
+      const rating = Math.min(5, Math.max(0, parseInt(f.rating) || 5));
+      const stars  = '★'.repeat(rating) + '☆'.repeat(5 - rating);
+      const date   = f.createdAt ? new Date(f.createdAt).toLocaleDateString('ro-RO', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
+      return `
+        <div class="admin-feedback-item">
+          <div class="admin-fb-stars">${escHtml(stars)}</div>
+          <div class="admin-fb-info">
+            <div class="admin-fb-name">${escHtml(f.name || '')}</div>
+            <div class="admin-fb-message">${escHtml(f.message || '')}</div>
+            ${date ? `<div class="admin-fb-date">${date}</div>` : ''}
+          </div>
+          <button class="btn-delete" onclick="deleteFeedback('${doc.id}')">Șterge</button>
+        </div>`;
+    }).join('');
+  } catch (e) {
+    el.innerHTML = '<div class="admin-empty">Eroare la încărcarea feedback-ului.</div>';
+    console.error('renderAdminFeedbackList:', e);
+  }
+}
+
+async function deleteFeedback(id) {
+  if (!confirm('Ștergi acest feedback?')) return;
+  try {
+    await db.collection('feedback').doc(id).delete();
+    await renderAdminFeedbackList();
+    showToast('Feedback șters.');
+  } catch (e) {
+    showToast('Eroare la ștergere. Verifică Firebase.');
+    console.error('deleteFeedback:', e);
   }
 }
 

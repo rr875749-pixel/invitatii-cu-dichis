@@ -914,3 +914,222 @@ footer {
   margin-bottom: 16px;
   line-height: 1.5;
 }
+
+/* ── FEEDBACK SECTION (PUBLIC) ── */
+.feedback-section {
+  padding: 60px 0 70px;
+  background: linear-gradient(180deg, var(--cream) 0%, #FFF5F8 100%);
+}
+
+.feedback-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-bottom: 52px;
+}
+
+.feedback-card {
+  background: var(--white);
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 18px var(--shadow);
+  padding: 28px 24px 22px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.feedback-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(201, 98, 122, 0.18);
+}
+
+.fb-quote {
+  font-family: 'Great Vibes', cursive;
+  font-size: 4rem;
+  color: var(--gold-light);
+  line-height: 0.75;
+  margin-bottom: 12px;
+  display: block;
+}
+
+.fb-message {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.05rem;
+  color: var(--text-medium);
+  font-style: italic;
+  line-height: 1.65;
+  flex: 1;
+  margin-bottom: 16px;
+}
+
+.fb-stars {
+  font-size: 1.15rem;
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+}
+
+.fb-stars .star-filled { color: var(--gold); }
+.fb-stars .star-empty  { color: var(--border); }
+
+.fb-author {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.95rem;
+  color: var(--text-light);
+  font-weight: 600;
+}
+
+.fb-empty {
+  text-align: center;
+  padding: 50px 24px;
+  color: var(--text-light);
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.1rem;
+  font-style: italic;
+  grid-column: 1 / -1;
+}
+
+/* ── FEEDBACK FORM ── */
+.feedback-form-wrap {
+  max-width: 560px;
+  margin: 0 auto;
+  background: var(--white);
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 22px var(--shadow);
+  padding: 36px 40px;
+}
+
+.feedback-form-title {
+  font-family: 'Great Vibes', cursive;
+  font-size: 2rem;
+  color: var(--pink-dark);
+  text-align: center;
+  margin-bottom: 22px;
+}
+
+.fb-input,
+.fb-textarea {
+  width: 100%;
+  padding: 11px 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-family: 'Lato', sans-serif;
+  font-size: 0.93rem;
+  color: var(--text-dark);
+  background: var(--cream);
+  outline: none;
+  transition: border-color 0.2s;
+  display: block;
+  margin-bottom: 14px;
+}
+
+.fb-input:focus,
+.fb-textarea:focus {
+  border-color: var(--pink-main);
+  background: var(--white);
+}
+
+.fb-textarea { resize: vertical; }
+
+.star-rating {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.star-rating .star {
+  font-size: 2.2rem;
+  color: var(--border);
+  cursor: pointer;
+  transition: color 0.15s, transform 0.15s;
+  user-select: none;
+  line-height: 1;
+}
+
+.star-rating .star:hover,
+.star-rating .star.active { color: var(--gold); transform: scale(1.2); }
+
+.btn-fb-submit {
+  width: 100%;
+  padding: 13px;
+  background: var(--pink-dark);
+  color: var(--white);
+  border: none;
+  border-radius: 30px;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.15rem;
+  letter-spacing: 0.4px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-fb-submit:hover { background: var(--text-dark); }
+.btn-fb-submit:disabled { background: var(--text-light); cursor: not-allowed; }
+
+.fb-success {
+  text-align: center;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.05rem;
+  color: #4CAF50;
+  font-style: italic;
+  margin-top: 12px;
+}
+
+@media (max-width: 900px) {
+  .feedback-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 580px) {
+  .feedback-grid { grid-template-columns: 1fr; }
+  .feedback-form-wrap { padding: 28px 20px; }
+}
+
+/* ── ADMIN FEEDBACK ── */
+.admin-feedback-wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px 40px;
+}
+
+.admin-feedback-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--pink-light);
+}
+
+.admin-feedback-item:last-child { border-bottom: none; }
+
+.admin-fb-stars {
+  color: var(--gold);
+  font-size: 1.05rem;
+  flex-shrink: 0;
+  letter-spacing: 1px;
+  padding-top: 3px;
+}
+
+.admin-fb-info { flex: 1; min-width: 0; }
+
+.admin-fb-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.admin-fb-message {
+  font-size: 0.88rem;
+  color: var(--text-medium);
+  margin-top: 3px;
+  line-height: 1.5;
+  font-style: italic;
+}
+
+.admin-fb-date {
+  font-size: 0.78rem;
+  color: var(--text-light);
+  margin-top: 4px;
+}
