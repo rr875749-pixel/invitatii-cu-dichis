@@ -105,15 +105,12 @@ function buildSubFilterTabs() {
     container.innerHTML = '';
     return;
   }
-  const showToate = currentFilter === 'nunta';
-  if (!currentSubFilter) currentSubFilter = showToate ? '' : subs[0].id;
+  if (!currentSubFilter) currentSubFilter = subs[0].id;
 
   container.style.display = 'flex';
-  container.innerHTML =
-    (showToate ? `<button class="sub-tab ${!currentSubFilter ? 'active' : ''}" data-sub="">Toate</button>` : '') +
-    subs.map(s =>
-      `<button class="sub-tab ${currentSubFilter === s.id ? 'active' : ''}" data-sub="${escHtml(s.id)}">${escHtml(s.label)}</button>`
-    ).join('');
+  container.innerHTML = subs.map(s =>
+    `<button class="sub-tab ${currentSubFilter === s.id ? 'active' : ''}" data-sub="${escHtml(s.id)}">${escHtml(s.label)}</button>`
+  ).join('');
   container.querySelectorAll('.sub-tab').forEach(btn => {
     btn.addEventListener('click', () => {
       currentSubFilter = btn.dataset.sub;
