@@ -822,14 +822,24 @@ async function renderAdminOrderList() {
       }).join('');
 
       const detailsHtml = Object.entries(o.details || {}).map(([sectionKey, sectionVal]) => {
-        if (sectionVal && typeof sectionVal === 'object') {
-          const rows = Object.entries(sectionVal).filter(([, v]) => v).map(([k, v]) =>
+        if (!sectionVal || typeof sectionVal !== 'object') {
+          return sectionVal ? `<div class="admin-order-detail-row"><strong>${escHtml(sectionKey)}</strong>${escHtml(String(sectionVal))}</div>` : '';
+        }
+        const pkgEntry = Object.values(FORM_PACKAGES).find(p => p.label === sectionKey);
+        let rows = '';
+        if (pkgEntry) {
+          pkgEntry.sections.forEach(section => {
+            section.fields.forEach(field => {
+              const v = sectionVal[field.label];
+              if (v) rows += `<div class="admin-order-detail-row"><strong>${escHtml(field.label)}</strong>${escHtml(String(v))}</div>`;
+            });
+          });
+        } else {
+          rows = Object.entries(sectionVal).filter(([, v]) => v).map(([k, v]) =>
             `<div class="admin-order-detail-row"><strong>${escHtml(k)}</strong>${escHtml(String(v))}</div>`
           ).join('');
-          return rows ? `<div class="admin-order-section-title">${escHtml(sectionKey)}</div><div class="admin-order-details-grid">${rows}</div>` : '';
         }
-        if (!sectionVal) return '';
-        return `<div class="admin-order-detail-row"><strong>${escHtml(sectionKey)}</strong>${escHtml(String(sectionVal))}</div>`;
+        return rows ? `<div class="admin-order-section-title">${escHtml(sectionKey)}</div><div class="admin-order-details-grid">${rows}</div>` : '';
       }).filter(Boolean).join('');
 
       const finalizeBtn = o.status !== 'completed'
