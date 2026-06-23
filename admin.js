@@ -434,6 +434,30 @@ async function deleteSubcategory(catId, subId) {
   }
 }
 
+/* ── CLEANUP ── */
+async function fixSubcategories() {
+  try {
+    const cats = await getCategories();
+    cats.forEach(cat => {
+      const subs = cat.subcategories || [];
+      const seen = new Set();
+      cat.subcategories = subs.filter(s => {
+        if (seen.has(s.id)) return false;
+        seen.add(s.id);
+        return true;
+      });
+    });
+    await saveCategories(cats);
+    await renderCategoryList();
+    buildSubcategorySelect();
+    showToast('Subcategorii curățate!');
+    console.log('Date după cleanup:', JSON.stringify(cats, null, 2));
+  } catch (e) {
+    console.error('fixSubcategories:', e);
+    showToast('Eroare la cleanup. Vezi consola.');
+  }
+}
+
 /* ── PAPER TYPES ── */
 async function getPaperTypes() {
   try {
