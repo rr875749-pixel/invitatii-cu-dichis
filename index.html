@@ -17,6 +17,7 @@
     <nav class="nav-row">
       <a href="#" class="active">Acasă</a>
       <a href="#produse">Produse</a>
+      <a href="#culori">Culori</a>
       <a href="#feedback">Feedback</a>
       <a href="#contact">Contact</a>
       <a href="#despre">Despre</a>
@@ -41,6 +42,16 @@
       <div class="sub-filter-tabs" id="subFilterTabs" style="display:none;"></div>
 
       <div class="products-grid" id="productsGrid"></div>
+    </div>
+  </section>
+
+  <!-- CULORI SIGILII -->
+  <section class="colors-section" id="culori">
+    <div class="container">
+      <h2 class="section-title">Culori Disponibile</h2>
+      <p class="section-sub">Nuanțe de ceară pentru sigilii și ștampile</p>
+      <div class="gold-divider" style="margin-bottom:40px;"></div>
+      <div id="culoriContainer"></div>
     </div>
   </section>
 
@@ -160,6 +171,148 @@
     <button id="lbNext" class="lb-nav lb-next" onclick="lbNav(1)">&#8250;</button>
     <div id="lbDots" class="lb-dots"></div>
   </div>
+
+  <script>
+  (function(){
+    function hexToRgb(h){return[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];}
+    function adj(h,a){return hexToRgb(h).map(function(c){return Math.min(255,Math.max(0,c+a));});}
+    function rgb(a){return'rgb('+a[0]+','+a[1]+','+a[2]+')';}
+    function rgbA(h,a){var c=hexToRgb(h);return'rgba('+c[0]+','+c[1]+','+c[2]+','+a+')';}
+
+    function getBg(c){
+      if(c.bg)return c.bg;
+      var h=c.hex,f=c.f;
+      if(f==='metallic')
+        return'radial-gradient(circle at 30% 22%,rgba(255,255,255,0.92) 0%,'+rgb(adj(h,72))+' 16%,'+h+' 46%,'+rgb(adj(h,-58))+' 80%,'+rgb(adj(h,-88))+' 100%)';
+      if(f==='sidefat')
+        return'radial-gradient(circle at 38% 28%,rgba(255,255,255,0.96) 0%,rgba(255,255,255,0.28) 20%,'+h+' 54%,'+rgb(adj(h,30))+' 82%,'+h+' 100%)';
+      if(f==='translucid')
+        return'radial-gradient(circle at 35% 25%,rgba(255,255,255,0.93) 0%,'+rgbA(h,0.52)+' 38%,'+rgbA(h,0.82)+' 100%)';
+      if(f==='reflexie')
+        return'radial-gradient(circle at 42% 30%,rgba(255,255,255,0.98) 0%,rgba(255,255,255,0.62) 22%,'+h+' 62%,'+rgb(adj(h,-8))+' 100%)';
+      return h;
+    }
+
+    function getShadow(f){
+      if(f==='metallic') return'0 5px 18px rgba(0,0,0,0.28),inset 0 -3px 6px rgba(0,0,0,0.28),inset 0 3px 5px rgba(255,255,255,0.48)';
+      if(f==='sidefat')  return'0 4px 15px rgba(0,0,0,0.18),inset 0 2px 5px rgba(255,255,255,0.75),inset 0 -1px 3px rgba(0,0,0,0.1)';
+      if(f==='translucid')return'0 4px 15px rgba(0,0,0,0.13),inset 0 0 14px rgba(255,255,255,0.58)';
+      if(f==='reflexie') return'0 3px 12px rgba(0,0,0,0.12),0 0 0 1.5px rgba(150,150,150,0.22)';
+      if(f==='multicolor')return'0 4px 14px rgba(0,0,0,0.18)';
+      return'0 2px 8px rgba(0,0,0,0.12)';
+    }
+
+    var groups=[
+      {title:'Metalizate',colors:[
+        {name:'Bronze',             hex:'#8C5E30',f:'metallic'},
+        {name:'Gold',               hex:'#C89820',f:'metallic'},
+        {name:'Gold-Bronze',        hex:'#B88428',f:'metallic'},
+        {name:'Cupru',              hex:'#A84A20',f:'metallic'},
+        {name:'Cupru Roșu',         hex:'#962020',f:'metallic'},
+        {name:'Cupru Portocaliu',   hex:'#B85020',f:'metallic'},
+        {name:'Argintiu',           hex:'#A0A8B8',f:'metallic'},
+      ]},
+      {title:'Sidefate',colors:[
+        {name:'Champagne',          hex:'#EED598',f:'sidefat'},
+        {name:'Verde Pin',          hex:'#285A38',f:'sidefat'},
+        {name:'Verde Olive',        hex:'#607030',f:'sidefat'},
+        {name:'Roșu Burgundia',     hex:'#780025',f:'sidefat'},
+        {name:'Albastru Imperial',  hex:'#083898',f:'sidefat'},
+        {name:'Albastru Cenușiu',   hex:'#5068A0',f:'sidefat'},
+        {name:'Roșu Închis',        hex:'#601018',f:'sidefat'},
+        {name:'Maro Tabacco',       hex:'#584025',f:'sidefat'},
+        {name:'Maro Castaniu',      hex:'#402010',f:'sidefat'},
+        {name:'Verde Lime',         hex:'#3AB818',f:'sidefat'},
+        {name:'Roz Catifea',        hex:'#C02878',f:'sidefat'},
+        {name:'Alb Perlat',         hex:'#EDE8DA',f:'sidefat'},
+      ]},
+      {title:'Translucide',colors:[
+        {name:'Galben',             hex:'#F0E030',f:'translucid'},
+        {name:'Verde Mentă',        hex:'#30E898',f:'translucid'},
+        {name:'Mov',                hex:'#9830E0',f:'translucid'},
+        {name:'Roz',                hex:'#F84898',f:'translucid'},
+        {name:'Peach',              hex:'#F8A860',f:'translucid'},
+        {name:'Alb Translucid',     hex:'#F5F2EC',f:'translucid'},
+        {name:'Alb Reflexie Albastră', hex:'#C0D8F0',f:'reflexie'},
+        {name:'Alb Reflexie Verde',    hex:'#C0F0D8',f:'reflexie'},
+        {name:'Alb Reflexie Galbenă',  hex:'#F0F0C0',f:'reflexie'},
+        {name:'Alb Reflexie Roz',      hex:'#F0C8E0',f:'reflexie'},
+      ]},
+      {title:'Alb',colors:[
+        {name:'Alb Opac',           hex:'#F0F0F0',f:'mat'},
+      ]},
+      {title:'Mat',colors:[
+        {name:'Roz Baby Pink',          hex:'#FFAABB',f:'mat'},
+        {name:'Albastru Baby Blue',     hex:'#88C8F0',f:'mat'},
+        {name:'Maro',                   hex:'#7A4838',f:'mat'},
+        {name:'Negru',                  hex:'#181010',f:'mat'},
+        {name:'Verde Mentă Deschis',    hex:'#68D8A0',f:'mat'},
+        {name:'Albastru Prăfuit',       hex:'#5C7888',f:'mat'},
+        {name:'Verde Sage Deschis',     hex:'#8AAE80',f:'mat'},
+        {name:'Roz Pudrat',             hex:'#E89898',f:'mat'},
+        {name:'Albastru Liliac',        hex:'#7080C0',f:'mat'},
+        {name:'Verde Amazonit',         hex:'#20A098',f:'mat'},
+        {name:'Verde Mentă Pudrat',     hex:'#80B8A8',f:'mat'},
+        {name:'Mov Liliac',             hex:'#A060C0',f:'mat'},
+        {name:'Roz Quartz',             hex:'#E07070',f:'mat'},
+        {name:'Verde Smarald',          hex:'#187848',f:'mat'},
+        {name:'Cremă Vanilie',          hex:'#EED068',f:'mat'},
+        {name:'Galben Lămâie',          hex:'#F8E018',f:'mat'},
+        {name:'Portocaliu Șerbet',      hex:'#F86020',f:'mat'},
+        {name:'Roz Coral',              hex:'#F85848',f:'mat'},
+        {name:'Roz Pastel',             hex:'#F8A8BC',f:'mat'},
+        {name:'Mov Liliac Deschis',     hex:'#C070C8',f:'mat'},
+        {name:'Mov Pastel',             hex:'#A868E8',f:'mat'},
+        {name:'Mov Lavandă',            hex:'#C0B0E8',f:'mat'},
+        {name:'Mov Sage',               hex:'#887080',f:'mat'},
+        {name:'Verde Sage Închis',      hex:'#385840',f:'mat'},
+        {name:'Verde Sequoia',          hex:'#305038',f:'mat'},
+        {name:'Verde Turcoaz Închis',   hex:'#005860',f:'mat'},
+        {name:'Verde Pădure',           hex:'#183818',f:'mat'},
+        {name:'Verde Mineral',          hex:'#208048',f:'mat'},
+        {name:'Portocaliu Cărămiziu',   hex:'#A82808',f:'mat'},
+        {name:'Portocaliu Piersică',    hex:'#F89850',f:'mat'},
+        {name:'Roșu Ruginiu',           hex:'#802020',f:'mat'},
+        {name:'Roșu Aprins',            hex:'#E80808',f:'mat'},
+        {name:'Albastru Pudrat',        hex:'#6080A8',f:'mat'},
+        {name:'Albastru Pastel',        hex:'#80A0C0',f:'mat'},
+        {name:'Albastru Floare de Colț',hex:'#3060C0',f:'mat'},
+        {name:'Peach',                  hex:'#F8A868',f:'mat'},
+        {name:'Cremă Nature',           hex:'#EEE0C8',f:'mat'},
+        {name:'Albastru Navy',          hex:'#001030',f:'mat'},
+        {name:'Gri Prăfuit',            hex:'#9898A8',f:'mat'},
+        {name:'Gri Deschis',            hex:'#C8C8C8',f:'mat'},
+      ]},
+      {title:'Multicolor',colors:[
+        {name:'Candy Cane',f:'multicolor',
+         bg:'repeating-linear-gradient(-48deg,#DC1818 0px,#DC1818 7px,#ffffff 7px,#ffffff 14px)'},
+        {name:'Green Limoncello',f:'multicolor',
+         bg:'linear-gradient(135deg,#38B000 0%,#7ED800 38%,#EEF200 68%,#A8D200 100%)'},
+        {name:'Frozen Sky',f:'multicolor',
+         bg:'linear-gradient(155deg,#D8F0FF 0%,#88C8F0 38%,#4898E0 65%,#A0D8F8 100%)'},
+        {name:'Milky Way',f:'multicolor',
+         bg:'radial-gradient(circle at 38% 32%,rgba(255,255,255,0.88) 0%,#E8D8A8 30%,#C09850 60%,#D8C080 85%,#B08840 100%)'},
+      ]},
+    ];
+
+    var container=document.getElementById('culoriContainer');
+    if(!container)return;
+    var html='';
+    groups.forEach(function(g){
+      html+='<div class="color-group">';
+      html+='<h3 class="color-group-title">'+g.title+'</h3>';
+      html+='<div class="colors-grid">';
+      g.colors.forEach(function(c){
+        html+='<div class="color-swatch">';
+        html+='<div class="color-circle" style="background:'+getBg(c)+';--cshadow:'+getShadow(c.f)+';"></div>';
+        html+='<span class="color-name">'+c.name+'</span>';
+        html+='</div>';
+      });
+      html+='</div></div>';
+    });
+    container.innerHTML=html;
+  })();
+  </script>
 
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>

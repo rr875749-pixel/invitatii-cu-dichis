@@ -730,6 +730,7 @@ async function renderAdminList() {
             <div class="admin-product-meta">${metaStr}</div>
           </div>
           <div class="admin-product-price">${escHtml(String(p.price))} lei</div>
+          ${images.length > 0 ? `<button class="btn-blur-zone" onclick="openBlurEditor('${p.id}')">Blur Foto</button>` : ''}
           <button class="btn-edit"   onclick="editProduct('${p.id}')">Editează</button>
           <button class="btn-delete" onclick="deleteProduct('${p.id}')">Șterge</button>
         </div>`;
@@ -917,4 +918,190 @@ async function deleteOrder(id) {
   }
 }
 
+/* ── BLUR EDITOR ── */
+let blurProductId = null;
+let blurImages    = [];
+let blurActiveIdx = 0;
+let blurOriginal  = null;
+let blurDirty     = false;
+let blurSel       = null;
+let blurSelecting = false;
+
+function openBlurEditor(productId) {
+  db.collection('products').doc(productId).get().then(snap => {
+    if (!snap.exists) return;
+    const p = { id: snap.id, ...snap.data() };
+    blurImages = getProductImages(p);
+    if (blurImages.length === 0) { alert('Acest produs nu are imagini.'); return; }
+    blurProductId = productId;
+    blurActiveIdx = 0;
+    blurDirty     = false;
+    blurSel       = null;
+    renderBlurTabs();
+    loadBlurImage(0);
+    document.getElementById('blurModal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }).catch(e => { showToast('Eroare la încărcarea produsului.'); console.error('openBlurEditor:', e); });
+}
+
+function renderBlurTabs() {
+  const tabs = document.getElementById('blurImageTabs');
+  if (blurImages.length <= 1) { tabs.innerHTML = ''; return; }
+  tabs.innerHTML = blurImages.map((img, i) =>
+    `<img class="blur-tab-thumb ${i === blurActiveIdx ? 'active' : ''}"
+          src="${img}" alt="Foto ${i + 1}" onclick="loadBlurImage(${i})" />`
+  ).join('');
+}
+
+function loadBlurImage(idx) {
+  blurActiveIdx = idx;
+  blurOriginal  = blurImages[idx];
+  blurSel       = null;
+  document.querySelectorAll('.blur-tab-thumb').forEach((t, i) => t.classList.toggle('active', i === idx));
+  const canvas = document.getElementById('blurCanvas');
+  const ctx    = canvas.getContext('2d');
+  const img    = new Image();
+  img.onload = () => {
+    const maxW    = Math.min(720, window.innerWidth - 120);
+    const scale   = img.width > maxW ? maxW / img.width : 1;
+    canvas.width  = Math.round(img.width  * scale);
+    canvas.height = Math.round(img.height * scale);
+    canvas._imgEl = img;
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+  };
+  img.src = blurImages[idx];
+}
+
+function initBlurCanvas() {
+  const canvas = document.getElementById('blurCanvas');
+  let startX, startY;
+
+  function getPos(e, touch) {
+    const r = canvas.getBoundingClientRect();
+    const s = touch ? e.touches[0] : e;
+    return { x: s.clientX - r.left, y: s.clientY - r.top };
+  }
+
+  function drawSel() {
+    const ctx = canvas.getContext('2d');
+    if (canvas._imgEl) ctx.drawImage(canvas._imgEl, 0, 0, canvas.width, canvas.height);
+    if (!blurSel || blurSel.w < 2 || blurSel.h < 2) return;
+    ctx.save();
+    ctx.strokeStyle = 'rgba(201,98,122,0.95)';
+    ctx.lineWidth   = 2;
+    ctx.setLineDash([6, 3]);
+    ctx.strokeRect(blurSel.x, blurSel.y, blurSel.w, blurSel.h);
+    ctx.fillStyle = 'rgba(201,98,122,0.15)';
+    ctx.fillRect(blurSel.x, blurSel.y, blurSel.w, blurSel.h);
+    ctx.restore();
+  }
+
+  canvas.addEventListener('mousedown', e => {
+    const p = getPos(e, false); startX = p.x; startY = p.y;
+    blurSelecting = true; blurSel = null;
+  });
+  canvas.addEventListener('mousemove', e => {
+    if (!blurSelecting) return;
+    const p = getPos(e, false);
+    blurSel = { x: Math.min(startX, p.x), y: Math.min(startY, p.y),
+                w: Math.abs(p.x - startX),  h: Math.abs(p.y - startY) };
+    drawSel();
+  });
+  canvas.addEventListener('mouseup',    () => { blurSelecting = false; });
+  canvas.addEventListener('mouseleave', () => { blurSelecting = false; });
+
+  canvas.addEventListener('touchstart', e => {
+    e.preventDefault();
+    const p = getPos(e, true); startX = p.x; startY = p.y;
+    blurSelecting = true; blurSel = null;
+  }, { passive: false });
+  canvas.addEventListener('touchmove', e => {
+    e.preventDefault();
+    if (!blurSelecting) return;
+    const p = getPos(e, true);
+    blurSel = { x: Math.min(startX, p.x), y: Math.min(startY, p.y),
+                w: Math.abs(p.x - startX),  h: Math.abs(p.y - startY) };
+    drawSel();
+  }, { passive: false });
+  canvas.addEventListener('touchend', () => { blurSelecting = false; });
+}
+
+function applyBlur() {
+  if (!blurSel || blurSel.w < 8 || blurSel.h < 8) {
+    alert('Te rog selectează mai întâi o zonă (trage cu mouse-ul peste numărul de telefon).');
+    return;
+  }
+  const canvas    = document.getElementById('blurCanvas');
+  const ctx       = canvas.getContext('2d');
+  const { x, y, w, h } = blurSel;
+  const blockSize = Math.max(8, Math.round(Math.min(w, h) / 8));
+
+  for (let bx = x; bx < x + w; bx += blockSize) {
+    for (let by = y; by < y + h; by += blockSize) {
+      const bw    = Math.min(blockSize, x + w - bx);
+      const bh    = Math.min(blockSize, y + h - by);
+      const pixel = ctx.getImageData(Math.round(bx), Math.round(by), 1, 1).data;
+      ctx.fillStyle = `rgb(${pixel[0]},${pixel[1]},${pixel[2]})`;
+      ctx.fillRect(Math.round(bx), Math.round(by), Math.ceil(bw), Math.ceil(bh));
+    }
+  }
+
+  const newUrl = canvas.toDataURL('image/jpeg', 0.88);
+  blurImages[blurActiveIdx] = newUrl;
+  blurDirty = true;
+  blurSel   = null;
+
+  const newImg = new Image();
+  newImg.onload = () => { canvas._imgEl = newImg; };
+  newImg.src = newUrl;
+
+  const tabs = document.querySelectorAll('.blur-tab-thumb');
+  if (tabs[blurActiveIdx]) tabs[blurActiveIdx].src = newUrl;
+
+  showToast('Blur aplicat! Apasă "Salvează Imaginea" pentru a salva în Firebase.');
+}
+
+function undoBlur() {
+  if (!blurOriginal) return;
+  if (!confirm('Anulezi toate modificările și revii la imaginea originală?')) return;
+  blurImages[blurActiveIdx] = blurOriginal;
+  blurDirty = false;
+  loadBlurImage(blurActiveIdx);
+  showToast('Imagine restaurată la original.');
+}
+
+async function saveBlurredImage() {
+  if (!blurDirty) { showToast('Nu există modificări de salvat.'); return; }
+  const btn = document.querySelector('.btn-blur-save');
+  btn.disabled = true; btn.textContent = 'Se salvează...';
+  try {
+    await db.collection('products').doc(blurProductId).update({
+      images: blurImages,
+      updatedAt: new Date().toISOString(),
+    });
+    blurOriginal = blurImages[blurActiveIdx];
+    blurDirty    = false;
+    await renderAdminList();
+    showToast('Imagine salvată cu succes! ✓');
+  } catch (e) {
+    showToast('Eroare la salvare. Verifică Firebase.');
+    console.error('saveBlurredImage:', e);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Salvează Imaginea';
+  }
+}
+
+function closeBlurEditor() {
+  if (blurDirty && !confirm('Ai modificări nesalvate. Ești sigură că vrei să închizi?')) return;
+  document.getElementById('blurModal').style.display = 'none';
+  document.body.style.overflow = '';
+  blurProductId = null; blurImages = []; blurOriginal = null;
+  blurSel = null; blurDirty = false;
+}
+
+function closeBlurModal(e) {
+  if (e.target.id === 'blurModal') closeBlurEditor();
+}
+
 checkAuth();
+initBlurCanvas();

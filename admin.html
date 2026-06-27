@@ -180,6 +180,27 @@
       </div>
     </div>
 
+    <!-- BLUR EDITOR MODAL -->
+    <div id="blurModal" class="blur-modal-overlay" onclick="closeBlurModal(event)">
+      <div class="blur-modal-box">
+        <div class="blur-modal-header">
+          <h3>Editare imagine — Blur zonă</h3>
+          <button class="blur-close-btn" onclick="closeBlurEditor()">✕</button>
+        </div>
+        <p class="blur-instructions">Selectează imaginea de mai jos, apoi <strong>trage cu mouse-ul</strong> peste zona cu numărul de telefon. Apasă <strong>Aplică Blur</strong>, apoi <strong>Salvează Imaginea</strong>.</p>
+        <div id="blurImageTabs" class="blur-image-tabs"></div>
+        <div class="blur-canvas-wrap">
+          <canvas id="blurCanvas"></canvas>
+        </div>
+        <div class="blur-actions">
+          <button class="btn-blur-apply" onclick="applyBlur()">Aplică Blur</button>
+          <button class="btn-blur-undo"  onclick="undoBlur()">Resetează</button>
+          <button class="btn-blur-save"  onclick="saveBlurredImage()">Salvează Imaginea</button>
+          <button class="btn-blur-cancel" onclick="closeBlurEditor()">Închide</button>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
