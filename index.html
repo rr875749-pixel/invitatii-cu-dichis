@@ -45,13 +45,21 @@
     </div>
   </section>
 
-  <!-- CULORI SIGILII -->
+  <!-- CULORI -->
   <section class="colors-section" id="culori">
     <div class="container">
       <h2 class="section-title">Culori Disponibile</h2>
-      <p class="section-sub">Nuanțe de ceară pentru sigilii și ștampile</p>
       <div class="gold-divider" style="margin-bottom:40px;"></div>
+
+      <p class="colors-cat-heading">Culori Sigilii</p>
+      <p class="section-sub" style="margin-bottom:32px;">Nuanțe de ceară pentru sigilii și ștampile</p>
       <div id="culoriContainer"></div>
+
+      <div class="gold-divider" style="margin:52px auto 40px;"></div>
+
+      <p class="colors-cat-heading">Culori Plicuri</p>
+      <p class="section-sub" style="margin-bottom:32px;">Nuanțe disponibile pentru plicuri B6 de nuntă</p>
+      <div id="culoriPlicuriContainer"></div>
     </div>
   </section>
 
@@ -284,8 +292,6 @@
         {name:'Gri Deschis',            hex:'#C8C8C8',f:'mat'},
       ]},
       {title:'Multicolor',colors:[
-        {name:'Candy Cane',f:'multicolor',
-         bg:'repeating-linear-gradient(-48deg,#DC1818 0px,#DC1818 7px,#ffffff 7px,#ffffff 14px)'},
         {name:'Green Limoncello',f:'multicolor',
          bg:'linear-gradient(135deg,#38B000 0%,#7ED800 38%,#EEF200 68%,#A8D200 100%)'},
         {name:'Frozen Sky',f:'multicolor',
@@ -311,6 +317,67 @@
       html+='</div></div>';
     });
     container.innerHTML=html;
+
+    // ── CULORI PLICURI ──
+    var plicGroups=[
+      {title:'Alb · Crem · Bej · Ivory',colors:[
+        {name:'Alb',              hex:'#F8F8F6',f:'mat'},
+        {name:'Alb Prăfuit',     hex:'#F0EEE8',f:'mat'},
+        {name:'Vellum White',    hex:'#EEF0E8',f:'reflexie'},
+        {name:'Alb Pătat',       f:'multicolor',
+         bg:'radial-gradient(circle at 28% 22%,rgba(180,140,80,0.55) 0%,transparent 3%),radial-gradient(circle at 64% 58%,rgba(160,120,60,0.45) 0%,transparent 2.5%),radial-gradient(circle at 48% 80%,rgba(140,100,50,0.5) 0%,transparent 2%),radial-gradient(circle at 82% 30%,rgba(170,130,70,0.4) 0%,transparent 2.2%),radial-gradient(circle at 15% 68%,rgba(150,110,55,0.45) 0%,transparent 2.5%),#F0EAE0'},
+        {name:'Ivory',           hex:'#F4EDD0',f:'mat'},
+        {name:'Bej Deschis',     hex:'#EDE8D4',f:'mat'},
+        {name:'Bej',             hex:'#D0B890',f:'mat'},
+        {name:'Crem Vanilie',    hex:'#DDDAB0',f:'mat'},
+        {name:'Crem Peach',      hex:'#E8C498',f:'mat'},
+        {name:'Craft',           hex:'#B08850',f:'mat'},
+      ]},
+      {title:'Roz',colors:[
+        {name:'Roz Pastel',      hex:'#E8C8CC',f:'mat'},
+        {name:'Roz',             hex:'#F2C4CE',f:'mat'},
+      ]},
+      {title:'Verde',colors:[
+        {name:'Verde Matcha',    hex:'#7A9868',f:'mat'},
+        {name:'Verde Olive',     hex:'#7A8A52',f:'mat'},
+        {name:'Verde Wasabi',    hex:'#5A6E40',f:'mat'},
+        {name:'Verde Mineral',   hex:'#2A5840',f:'mat'},
+        {name:'Verde Pădure',    hex:'#2D5C3A',f:'mat'},
+        {name:'Verde Pin',       hex:'#2A4830',f:'mat'},
+      ]},
+      {title:'Albastru',colors:[
+        {name:'Albastru Pudrat', hex:'#B8D0DC',f:'mat'},
+        {name:'Albastru Pastel', hex:'#8CCAD8',f:'mat'},
+        {name:'Albastru Stone',  hex:'#4C5E70',f:'mat'},
+        {name:'Albastru Royal',  hex:'#1A2848',f:'mat'},
+      ]},
+      {title:'Alte Culori',colors:[
+        {name:'Gri Deschis',         hex:'#878D87',f:'mat'},
+        {name:'Sandalwood',          hex:'#6A1E28',f:'mat'},
+        {name:'Port. Scorțișoară',   hex:'#C06A38',f:'mat'},
+        {name:'Maro',                hex:'#291C16',f:'mat'},
+        {name:'Negru',               hex:'#1A1818',f:'mat'},
+        {name:'Negru Intens',        hex:'#0E0E0E',f:'mat'},
+      ]},
+    ];
+
+    var pc=document.getElementById('culoriPlicuriContainer');
+    if(pc){
+      var ph='';
+      plicGroups.forEach(function(g){
+        ph+='<div class="color-group">';
+        ph+='<h3 class="color-group-title">'+g.title+'</h3>';
+        ph+='<div class="colors-grid">';
+        g.colors.forEach(function(c){
+          ph+='<div class="color-swatch">';
+          ph+='<div class="color-circle" style="background:'+getBg(c)+';--cshadow:'+getShadow(c.f)+';"></div>';
+          ph+='<span class="color-name">'+c.name+'</span>';
+          ph+='</div>';
+        });
+        ph+='</div></div>';
+      });
+      pc.innerHTML=ph;
+    }
   })();
   </script>
 
