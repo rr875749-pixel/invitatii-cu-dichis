@@ -359,31 +359,67 @@ header.compact .nav-top {
 
 /* ── CONTACT ── */
 .contact-section {
-  background: linear-gradient(135deg, #FCE8ED 0%, #FFF9ED 100%);
-  padding: 60px 0; text-align: center;
+  padding: 70px 0 200px;
+  text-align: center;
+  background-color: #FDF0F4;
+  background-image:
+    radial-gradient(ellipse 6px 8px at 12px 18px, rgba(201,98,122,0.18) 60%, transparent 61%),
+    radial-gradient(circle 2px at 12px 10px, rgba(201,98,122,0.22) 100%, transparent 100%),
+    radial-gradient(ellipse 6px 8px at 36px 6px, rgba(201,98,122,0.13) 60%, transparent 61%),
+    radial-gradient(circle 2px at 36px 0px, rgba(201,98,122,0.18) 100%, transparent 100%),
+    radial-gradient(ellipse 5px 7px at 60px 22px, rgba(196,160,100,0.14) 60%, transparent 61%),
+    radial-gradient(circle 1.5px at 60px 15px, rgba(196,160,100,0.18) 100%, transparent 100%);
+  background-size: 72px 36px;
+  position: relative;
 }
+
+.contact-medallion {
+  display: inline-block;
+  background: rgba(255,255,255,0.96);
+  border: 2px solid var(--gold-light);
+  border-radius: 60px;
+  padding: 52px 64px 48px;
+  box-shadow: 0 8px 40px rgba(201,98,122,0.14), 0 2px 12px rgba(196,160,100,0.1);
+  position: relative;
+}
+
+.contact-medallion::before,
+.contact-medallion::after {
+  content: '✦';
+  position: absolute;
+  color: var(--gold-light);
+  font-size: 1.1rem;
+  top: 18px;
+}
+.contact-medallion::before { left: 22px; }
+.contact-medallion::after  { right: 22px; }
 
 .contact-section .contact-text {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 1.2rem; color: var(--text-medium);
-  font-style: italic; margin-bottom: 28px;
+  font-size: 1.15rem; color: var(--text-medium);
+  font-style: italic; margin-bottom: 30px;
 }
 
-.contact-links { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+.contact-links { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
 
 .contact-btn {
-  padding: 12px 34px;
+  padding: 13px 32px;
   background: var(--white);
-  border: 1px solid var(--border); border-radius: 30px;
+  border: 1.5px solid var(--border); border-radius: 30px;
   color: var(--pink-dark); text-decoration: none;
   font-family: 'Cormorant Garamond', serif; font-size: 1.1rem;
-  transition: all 0.3s;
+  transition: all 0.25s;
   box-shadow: 0 2px 14px var(--shadow);
 }
 
 .contact-btn:hover {
   background: var(--pink-dark); color: var(--white);
-  border-color: var(--pink-dark); transform: translateY(-2px);
+  border-color: var(--pink-dark); transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(201,98,122,0.25);
+}
+
+@media (max-width: 580px) {
+  .contact-medallion { padding: 40px 28px 36px; border-radius: 36px; }
 }
 
 /* ── DESPRE MINE ── */
@@ -1411,6 +1447,55 @@ footer {
 }
 
 /* ── FEEDBACK SECTION (PUBLIC) ── */
+/* ── BAND FOTO ── */
+.band-section {
+  padding: 0;
+  background: var(--cream);
+  overflow: hidden;
+}
+
+.band-track-wrap {
+  width: 100%;
+  overflow: hidden;
+  padding: 24px 0;
+}
+
+.band-track {
+  display: flex;
+  gap: 16px;
+  width: max-content;
+  animation: bandScroll 60s linear infinite;
+}
+
+.band-track:hover {
+  animation-play-state: paused;
+}
+
+.band-img {
+  height: 240px;
+  width: auto;
+  border-radius: 16px;
+  object-fit: cover;
+  box-shadow: 0 4px 18px var(--shadow);
+  flex-shrink: 0;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.band-img:hover {
+  transform: scale(1.04);
+  box-shadow: 0 10px 30px rgba(201,98,122,0.22);
+}
+
+@keyframes bandScroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@media (max-width: 600px) {
+  .band-img { height: 160px; }
+  .band-track { gap: 10px; }
+}
+
 .feedback-section {
   padding: 60px 0 70px;
   background: linear-gradient(180deg, var(--cream) 0%, #FFF5F8 100%);
